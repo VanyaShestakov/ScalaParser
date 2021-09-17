@@ -1,0 +1,6 @@
+object object HelloWorld {
+  def main(args: Array[String]): Unit = {
+    println(name, surname);
+    int a = 1 + 3;
+  }
+}
