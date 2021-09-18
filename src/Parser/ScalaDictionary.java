@@ -9,15 +9,19 @@ public class ScalaDictionary {
     private Set<String> operators = Set.of(
     "\\(", "\\)", "\\[", "\\]", "\\{", "\\}",
     "`", "'", "\"", "\\.", ";", ",", ":",
-    "abstract", "case", "catch", "class", "def",    "do", "else", "extends", "false", "final",
+    "abstract", "case", "catch", "class", "def", "do", "else", "extends",
     "finally", "for", "forSome", "if",  "implicit", "import", "lazy", "macro", "match", "new",
     "null", "object", "override", "package", "private", "protected", "return", "sealed",
-    "super", "this", "throw", "trait", "try", "true", "type", "val", "while", "with", "yield",
+    "super", "this", "throw", "trait", "try", "type", "val", "while", "with", "yield",
     "<", ">", "=", "==", "\\+", "-", "\\*", "!=", "<=", ">=", "-=", "\\+=", "\\*=", "/=", "\\^=", "\\+\\+",
-    "--", ">:", "<:", "!",
-    "Boolean", "Integer", "Long", "Double", "String", "[A-Za-z]+\\(+");
+    "--", ">:", "<:", "!", "[A-Za-z]+\\(+");
+    private Set<String> dataTypes = Set.of(
+    "int\s", "long\s", "short\s", "double\s", "String\s", "boolean\s", "float\s");
 
     public Set<String> getOperators() {
         return operators;
+    }
+    public Set<String> getDataTypes() {
+        return dataTypes;
     }
 }

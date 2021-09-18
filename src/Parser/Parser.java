@@ -37,34 +37,75 @@ public class Parser {
         SourceInfo info = new SourceInfo();
         ScalaDictionary dictionary = new ScalaDictionary();
         Set<String> operators = dictionary.getOperators();
+        Set<String> dataTypes = dictionary.getDataTypes();
+        Set<String> operands;
         for (String line: sourceLines) {
             line = setSubstitute(line);
             StringTokenizer tokenizer = new StringTokenizer(line, " \t\n\r");
+            for (String dataType : dataTypes) {
+                fillOperands(line, dataType, info);
+            }
+            operands = Set.copyOf(info.getAllOperands());
             while (tokenizer.hasMoreTokens()) {
                 String currToken = tokenizer.nextToken();
                 for (String operator: operators) {
-                    currToken = findOperator(currToken, operator, info);
+                    findOperator(currToken, operator, info);
                 }
-
-                if (!currToken.equals("")) {
-                    info.addOperand(currToken);
+                for (String operand: operands) {
+                    findOperand(currToken, operand, info);
                 }
             }
         }
         System.out.println(info.getAllOperators());
         System.out.println(info.getUniqueOperators());
+        System.out.println(info.getAllOperands());
         System.out.println(info.getUniqueOperands());
     }
 
-    private String findOperator(String token, String operator, SourceInfo info) {
+    private void fillOperands(String line, String dataType, SourceInfo info) {
+        ScalaDictionary dictionary = new ScalaDictionary();
+        StringTokenizer tokenizer;
+        Pattern pattern = Pattern.compile(dataType);
+        Matcher matcher = pattern.matcher(line);
+        boolean isNotOperand;
+
+        if (matcher.find()) {
+            line = line.replaceAll(matcher.group(), "");
+            tokenizer = new StringTokenizer(line, " \n;,");
+            while (tokenizer.hasMoreTokens()) {
+                String currToken = tokenizer.nextToken();
+                isNotOperand = false;
+                for (String operator : dictionary.getOperators()) {
+                    if (currToken.matches(operator)) {
+                        isNotOperand = true;
+                    }
+                }
+                if (currToken.matches("\\d+")) {
+                    isNotOperand = true;
+                }
+                if (!isNotOperand) {
+                    info.addOperand(currToken);
+                }
+            }
+        }
+    }
+
+    private void findOperand(String line, String operand, SourceInfo info) {
+        Pattern pattern = Pattern.compile(operand);
+        Matcher matcher = pattern.matcher(line);
+
+        while (matcher.find()) {
+            info.addOperand(matcher.group());
+        }
+    }
+
+    private void findOperator(String token, String operator, SourceInfo info) {
         Pattern pattern = Pattern.compile(operator);
         Matcher matcher = pattern.matcher(token);
 
         while (matcher.find()) {
             info.addOperator(matcher.group());
         }
-        token = token.replaceAll(operator, "");
-        return token;
 }
 
     private String setSubstitute(final String text) {
