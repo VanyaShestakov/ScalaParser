@@ -14,14 +14,19 @@ public class ScalaDictionary {
     "null", "object", "override", "package", "private", "protected", "return", "sealed",
     "super", "this", "throw", "trait", "try", "type", "val", "while", "with", "yield",
     "<", ">", "=", "==", "\\+", "-", "\\*", "!=", "<=", ">=", "-=", "\\+=", "\\*=", "/=", "\\^=", "\\+\\+",
-    "--", ">:", "<:", "!", "[A-Za-z]+\\(+");
+    "--", ">:", "<:", "!", "<<", ">>>", "[A-Za-z]+\\(+");
     private Set<String> dataTypes = Set.of(
-    "int\s", "long\s", "short\s", "double\s", "String\s", "boolean\s", "float\s");
+    "\sInt\s", "\sLong\s", "\sShort\s", "\sDouble\s", "\sString\s", "\sBoolean\s", "\sfloat\s");
+    private Set<String> dynamicTypes = Set.of("\sval\s", "\svar\s");
 
     public Set<String> getOperators() {
         return operators;
     }
     public Set<String> getDataTypes() {
         return dataTypes;
+    }
+
+    public Set<String> getDynamicTypes() {
+        return dynamicTypes;
     }
 }

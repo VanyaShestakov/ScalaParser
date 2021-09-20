@@ -89,14 +89,7 @@ public class SourceInfo {
     }
 
 
-
-
-
-
-
-
-
-
-
-
+    public void clearOperands() {
+        operands.clear();
+    }
 }

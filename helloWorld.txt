@@ -1,6 +1,6 @@
-object object HelloWorld {
+object HelloWorld {
   def main(args: Array[String]): Unit = {
-    String name, surname;
+    val name, surname
     println(name, surname);
     int a = 1 + 3;
   }

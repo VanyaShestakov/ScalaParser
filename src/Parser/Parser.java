@@ -1,5 +1,4 @@
 package Parser;
-import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,25 +36,36 @@ public class Parser {
         SourceInfo info = new SourceInfo();
         ScalaDictionary dictionary = new ScalaDictionary();
         Set<String> operators = dictionary.getOperators();
-        Set<String> dataTypes = dictionary.getDataTypes();
+        Set<String> dynamicTypes = dictionary.getDataTypes();
         Set<String> operands;
         for (String line: sourceLines) {
             line = setSubstitute(line);
             StringTokenizer tokenizer = new StringTokenizer(line, " \t\n\r");
-            for (String dataType : dataTypes) {
-                fillOperands(line, dataType, info);
+            for (String dynamicType : dynamicTypes) {
+                fillOperands(line, dynamicType, info);
             }
-            operands = Set.copyOf(info.getAllOperands());
             while (tokenizer.hasMoreTokens()) {
                 String currToken = tokenizer.nextToken();
                 for (String operator: operators) {
                     findOperator(currToken, operator, info);
                 }
-                for (String operand: operands) {
+            }
+        }
+
+        operands = new HashSet<>(info.getAllOperands());
+        info.clearOperands();
+        for (String line: sourceLines) {
+            line = setSubstitute(line);
+            StringTokenizer tokenizer = new StringTokenizer(line, " \t\n\r(),;");
+            while (tokenizer.hasMoreTokens()) {
+                String currToken = tokenizer.nextToken();
+                for (String operand : operands) {
+                    //System.out.println(operands);
                     findOperand(currToken, operand, info);
                 }
             }
         }
+
         System.out.println(info.getAllOperators());
         System.out.println(info.getUniqueOperators());
         System.out.println(info.getAllOperands());
@@ -80,6 +90,12 @@ public class Parser {
                         isNotOperand = true;
                     }
                 }
+//                for (String dataType : dictionary.getDataTypes()) {
+//                    if (currToken.matches(operator)) {
+//                        isNotOperand = true;
+//                    }
+//                }
+
                 if (currToken.matches("\\d+")) {
                     isNotOperand = true;
                 }
@@ -91,11 +107,21 @@ public class Parser {
     }
 
     private void findOperand(String line, String operand, SourceInfo info) {
-        Pattern pattern = Pattern.compile(operand);
-        Matcher matcher = pattern.matcher(line);
+        String initialOperand = operand;
+        operand = "^" + operand + "$";
+        Matcher matcher = null;
+        //[,:;{}()]*
+        try {
+            Pattern pattern = Pattern.compile(operand);
+            matcher = pattern.matcher(line);
+        } catch (Exception e) {
+            System.out.println(operand);
+            System.out.println(info.getAllOperands());
+            System.out.printf("В строке %s при операнде %s добавляем %s\n", line, operand, initialOperand);
+        }
 
         while (matcher.find()) {
-            info.addOperand(matcher.group());
+            info.addOperand(initialOperand);
         }
     }
 
@@ -111,7 +137,7 @@ public class Parser {
     private String setSubstitute(final String text) {
         StringBuilder stringBuilder = new StringBuilder(text);
         String temp = stringBuilder.toString();
-        int startQuote = temp.indexOf('"', 0);
+        int startQuote = temp.indexOf('"');
         int endQuote = -1;
         if (startQuote >= 0 ) {
             endQuote = temp.indexOf('"', startQuote + 1);
